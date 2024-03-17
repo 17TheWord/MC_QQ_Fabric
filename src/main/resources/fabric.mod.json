@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "mcqq",
   "version": "${version}",
-  "name": "MC_QQ_Fabric",
-  "description": "Translate to NoneBot2",
+  "name": "${archives_base_name}",
+  "description": "${mod_description}",
   "authors": [
     "17TheWord"
   ],
@@ -11,7 +11,7 @@
     "website": "https://github.com/17TheWord/MC_QQ_Fabric",
     "repo": "https://github.com/17TheWord/MC_QQ_Fabric"
   },
-  "license": "MIT",
+  "license": "${mod_license}",
   "icon": "logo.png",
   "environment": "server",
   "entrypoints": {
