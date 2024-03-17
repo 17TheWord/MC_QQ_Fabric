@@ -1,11 +1,18 @@
 package com.github.theword.utils;
 
 import com.github.theword.returnBody.returnModle.MyBaseComponent;
+import com.github.theword.returnBody.returnModle.MyHoverEntity;
+import com.github.theword.returnBody.returnModle.MyHoverItem;
 import com.github.theword.returnBody.returnModle.MyTextComponent;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ParseJsonToEvent {
 
@@ -46,20 +53,29 @@ public class ParseJsonToEvent {
             if (myTextComponent.getHoverEvent() != null) {
                 HoverEvent hoverEvent = null;
                 switch (myTextComponent.getHoverEvent().getAction()) {
-                    case "show_text":
+                    case "show_text" -> {
                         if (myTextComponent.getHoverEvent().getBaseComponentList() != null && myTextComponent.getHoverEvent().getBaseComponentList().size() > 0) {
                             MutableText textComponent = parseMessages(myTextComponent.getHoverEvent().getBaseComponentList());
                             hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent);
                         }
-                        break;
-                    case "show_item":
-//                            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item());
-                        break;
-                    case "show_entity":
-//                            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new Entity());
-                        break;
-                    default:
-                        break;
+                    }
+                    case "show_item" -> {
+                        MyHoverItem myHoverItem = myTextComponent.getHoverEvent().getItem();
+                        Item item = Item.byRawId(myHoverItem.getId());
+                        ItemStack itemStack = new ItemStack(item, myHoverItem.getCount());
+                        HoverEvent.ItemStackContent itemStackContent = new HoverEvent.ItemStackContent(itemStack);
+                        hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemStackContent);
+                    }
+                    case "show_entity" -> {
+                        MyHoverEntity myHoverEntity = myTextComponent.getHoverEvent().getEntity();
+                        Optional<EntityType<?>> entityType = EntityType.get(myHoverEntity.getType());
+                        if (entityType.isPresent()) {
+                            HoverEvent.EntityContent entityTooltipInfo = new HoverEvent.EntityContent(entityType.get(), UUID.randomUUID(), MutableText.of(new LiteralTextContent(myHoverEntity.getType())));
+                            hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_ENTITY, entityTooltipInfo);
+                        }
+                    }
+                    default -> {
+                    }
                 }
                 style.withHoverEvent(hoverEvent);
             }
